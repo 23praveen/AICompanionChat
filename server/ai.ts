@@ -2,34 +2,35 @@ import { OpenAI } from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AiModels, type AiModel } from "@shared/schema";
 
-// Initialize the NVIDIA-hosted DeepSeek API client
+// Initialize the NVIDIA-hosted DeepSeek API client with API key directly
+const NVIDIA_API_KEY = "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";
 const deepseekClient = new OpenAI({
   baseURL: "https://integrate.api.nvidia.com/v1",
-  apiKey: process.env.NVIDIA_API_KEY || "",
+  apiKey: NVIDIA_API_KEY,
 });
+
+// Log the configuration to verify
+console.log("DeepSeek client configured with API key");
 
 // Initialize the Google Gemini AI client
 let geminiClient: GoogleGenerativeAI;
 let geminiModel: any;
 
 function initializeGeminiClient() {
-  if (!geminiClient && process.env.GOOGLE_API_KEY) {
-    geminiClient = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+  const GOOGLE_API_KEY = "AIzaSyBBocaqzNh8F4a4u2zqihJf0ygUI-Kr3Vs";
+  if (!geminiClient) {
+    console.log("Initializing Gemini client with API key");
+    geminiClient = new GoogleGenerativeAI(GOOGLE_API_KEY);
     geminiModel = geminiClient.getGenerativeModel({ model: "gemini-1.5-pro" });
+    console.log("Gemini model initialized:", geminiModel ? "✓" : "✗");
   }
 }
 
 export async function generateChatResponse(model: AiModel, messages: { role: string; content: string }[]) {
   try {
-    // Check if we have the required API keys
-    const hasNvidiaKey = !!process.env.NVIDIA_API_KEY;
-    const hasGoogleKey = !!process.env.GOOGLE_API_KEY;
-
-    // Validate model availability based on API keys
-    if (model === AiModels.DEEPSEEK && !hasNvidiaKey) {
-      throw new Error("NVIDIA_API_KEY is not set for DeepSeek model");
-    } else if (model === AiModels.GEMINI && !hasGoogleKey) {
-      throw new Error("GOOGLE_API_KEY is not set for Gemini model");
+    // Initialize Gemini client if needed
+    if (model === AiModels.GEMINI && !geminiClient) {
+      initializeGeminiClient();
     }
 
     // Generate response based on model
@@ -47,11 +48,7 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
 }
 
 async function generateDeepSeekResponse(messages: { role: string; content: string }[]) {
-  // This check is redundant since we already check in generateChatResponse,
-  // but keeping it for extra safety
-  if (!process.env.NVIDIA_API_KEY) {
-    throw new Error("NVIDIA_API_KEY is not set");
-  }
+  // Using hardcoded API key from the client initialization
 
   const completion = await deepseekClient.chat.completions.create({
     model: "deepseek-ai/deepseek-r1-distill-qwen-32b",
@@ -68,12 +65,6 @@ async function generateDeepSeekResponse(messages: { role: string; content: strin
 }
 
 async function generateGeminiResponse(messages: { role: string; content: string }[]) {
-  // This check is redundant since we already check in generateChatResponse,
-  // but keeping it for extra safety
-  if (!process.env.GOOGLE_API_KEY) {
-    throw new Error("GOOGLE_API_KEY is not set");
-  }
-
   // Initialize Gemini client if not already done
   initializeGeminiClient();
 

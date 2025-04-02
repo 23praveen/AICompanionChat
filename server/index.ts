@@ -1,6 +1,18 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Manually set environment variables for this session
+process.env.NVIDIA_API_KEY = "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";
+process.env.GOOGLE_API_KEY = "AIzaSyBBocaqzNh8F4a4u2zqihJf0ygUI-Kr3Vs";
+
+// Log API keys (masked for security) to verify they're loaded
+console.log("NVIDIA API Key loaded:", process.env.NVIDIA_API_KEY ? "✓" : "✗");
+console.log("Google API Key loaded:", process.env.GOOGLE_API_KEY ? "✓" : "✗");
 
 const app = express();
 app.use(express.json());
