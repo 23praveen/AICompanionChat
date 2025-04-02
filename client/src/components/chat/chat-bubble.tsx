@@ -14,8 +14,8 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
   if (isUser) {
     return (
       <div className="flex items-start justify-end max-w-full">
-        <div className="max-w-[85%] md:max-w-lg chat-bubble-user bg-primary-600 px-4 py-3 rounded-tl-xl rounded-tr-xl rounded-bl-xl shadow-md">
-          <p className="text-sm whitespace-pre-wrap font-medium text-white">{message.content}</p>
+        <div className="max-w-[85%] md:max-w-[75%] chat-bubble-user bg-primary-600 px-4 py-3 rounded-2xl shadow-md">
+          <p className="text-sm whitespace-pre-wrap text-white">{message.content}</p>
         </div>
         <div className="ml-2 flex-shrink-0">
           <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
@@ -29,15 +29,15 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
   return (
     <div className="flex items-start max-w-full">
       <div className="flex-shrink-0 mr-2">
-        <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
-          <Cpu className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+        <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <Cpu className="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
       </div>
-      <div className="max-w-[85%] md:max-w-3xl chat-bubble-ai bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-tr-xl rounded-tl-xl rounded-br-xl shadow-md">
+      <div className="max-w-[85%] md:max-w-[75%] chat-bubble-ai bg-white dark:bg-gray-800 px-4 py-3 rounded-2xl shadow-sm">
         <div className="flex flex-wrap items-center justify-between mb-2 border-b pb-2 border-slate-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className={`w-2 h-2 rounded-full mr-2 ${message.model === AiModels.DEEPSEEK ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
-            <p className="text-sm font-medium text-primary-600 dark:text-primary-400">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
               {message.model === AiModels.DEEPSEEK ? 'DeepSeek AI' : 'Gemini AI'}
             </p>
           </div>
@@ -46,7 +46,7 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
               onClick={() => {
                 navigator.clipboard.writeText(message.content);
               }}
-              className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 mt-1 sm:mt-0"
+              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1 sm:mt-0"
             >
               Copy response
             </button>
@@ -56,15 +56,14 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
         {isLoading ? (
           <div className="flex items-center p-4">
             <div className="flex space-x-1 items-center">
-              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-75"></div>
-              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-150"></div>
-              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-300"></div>
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-75"></div>
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-150"></div>
             </div>
-            <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Generating response...</span>
+            <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">Thinking...</span>
           </div>
         ) : (
-          <div className="text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap">
+          <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
             {formatMessageContent(message.content)}
           </div>
         )}
@@ -165,14 +164,17 @@ function formatMessageContent(content: string) {
         return (
           <div key={index} className="mb-3">
             <details className="mb-2">
-              <summary className="cursor-pointer text-xs font-medium text-slate-500 dark:text-slate-400 p-2 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600">
-                View AI thinking process
+              <summary className="cursor-pointer text-xs font-medium text-gray-500 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                  <path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h3.8a2 2 0 0 0 1.4-.6L12 4.6a2 2 0 0 1 1.4-.6h3.8a2 2 0 0 1 2 2v2.4Z"></path>
+                </svg>
+                View AI thought process
               </summary>
-              <div className="p-3 mt-2 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
-                <p className="text-sm text-slate-700 dark:text-slate-300">{thinkContent}</p>
+              <div className="p-3 mt-2 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300">
+                {thinkContent}
               </div>
             </details>
-            <p className="text-sm text-slate-800 dark:text-slate-200">{answerContent}</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200">{answerContent}</p>
           </div>
         );
       } 
@@ -183,16 +185,19 @@ function formatMessageContent(content: string) {
           <div key={index} className="mb-3">
             {parts[0] && (
               <details className="mb-2">
-                <summary className="cursor-pointer text-xs font-medium text-slate-500 dark:text-slate-400 p-2 bg-slate-100 dark:bg-slate-700 rounded-md hover:bg-slate-200 dark:hover:bg-slate-600">
-                  View AI thinking process
+                <summary className="cursor-pointer text-xs font-medium text-gray-500 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                    <path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h3.8a2 2 0 0 0 1.4-.6L12 4.6a2 2 0 0 1 1.4-.6h3.8a2 2 0 0 1 2 2v2.4Z"></path>
+                  </svg>
+                  View AI thought process
                 </summary>
-                <div className="p-3 mt-2 bg-slate-50 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700">
-                  <p className="text-sm text-slate-700 dark:text-slate-300">{parts[0].trim()}</p>
+                <div className="p-3 mt-2 bg-gray-50 dark:bg-gray-800/50 rounded-md border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300">
+                  {parts[0].trim()}
                 </div>
               </details>
             )}
             <div className="font-medium mb-1">{parts[1]}</div>
-            <p className="text-sm text-slate-800 dark:text-slate-200">{parts[2].trim()}</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200">{parts[2].trim()}</p>
           </div>
         );
       }
