@@ -127,8 +127,26 @@ async function generateGeminiResponse(messages: { role: string; content: string 
 }
 
 function formatMessagesForGemini(messages: { role: string; content: string }[]) {
-  return messages.map(msg => ({
+  // Filter out system messages and ensure proper ordering
+  const filteredMessages = messages.filter(msg => msg.role !== "system");
+  
+  // Gemini requires the first message to be from "user"
+  let formattedMessages = filteredMessages.map(msg => ({
     role: msg.role === "assistant" ? "model" : "user",
     parts: [{ text: msg.content }]
   }));
+  
+  // If the first message is not from a user, we need to fix the sequence
+  if (formattedMessages.length > 0 && formattedMessages[0].role !== "user") {
+    // Start with a user message
+    formattedMessages = [
+      {
+        role: "user", 
+        parts: [{ text: "Hello, assist me with my questions." }]
+      },
+      ...formattedMessages
+    ];
+  }
+  
+  return formattedMessages;
 }

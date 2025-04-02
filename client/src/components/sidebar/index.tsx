@@ -100,9 +100,9 @@ export default function Sidebar({
           </div>
         ) : (
           chats.map((chat) => (
-            <button 
+            <div 
               key={chat.id}
-              className={`w-full text-left p-2 rounded-lg transition group ${
+              className={`w-full text-left p-2 rounded-lg transition group cursor-pointer ${
                 selectedChatId === chat.id 
                   ? "bg-primary-100 dark:bg-primary-900/30 text-primary-900 dark:text-primary-50" 
                   : "hover:bg-slate-100 dark:hover:bg-slate-700"
@@ -120,22 +120,25 @@ export default function Sidebar({
                   </p>
                 </div>
                 <div className="ml-2 flex-shrink-0 flex">
-                  <button 
+                  <div 
                     className={`ml-2 ${
                       selectedChatId === chat.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                    } text-slate-400 hover:text-slate-500 dark:hover:text-slate-300`}
-                    onClick={(e) => onDeleteChat(chat.id, e)}
-                    disabled={isDeletingChat}
+                    } text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 cursor-pointer`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteChat(chat.id, e);
+                    }}
+                    aria-disabled={isDeletingChat}
                   >
                     {isDeletingChat && selectedChatId === chat.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Trash2 className="h-4 w-4" />
                     )}
-                  </button>
+                  </div>
                 </div>
               </div>
-            </button>
+            </div>
           ))
         )}
       </div>
