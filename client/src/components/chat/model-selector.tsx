@@ -1,6 +1,6 @@
 import { AiModels, type AiModel } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, PlusCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -11,9 +11,10 @@ import {
 interface ModelSelectorProps {
   selectedModel: AiModel;
   onModelSelect: (model: AiModel) => void;
+  onNewChat?: () => void;
 }
 
-export default function ModelSelector({ selectedModel, onModelSelect }: ModelSelectorProps) {
+export default function ModelSelector({ selectedModel, onModelSelect, onNewChat }: ModelSelectorProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -30,8 +31,30 @@ export default function ModelSelector({ selectedModel, onModelSelect }: ModelSel
             </Tooltip>
           </TooltipProvider>
         </div>
-        <div className="text-xs font-medium text-primary-600 dark:text-primary-400 px-2 py-1 bg-primary-50 dark:bg-primary-900/30 rounded-full">
-          Active: {selectedModel === AiModels.DEEPSEEK ? 'DeepSeek AI' : 'Gemini AI'}
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-medium text-primary-600 dark:text-primary-400 px-2 py-1 bg-primary-50 dark:bg-primary-900/30 rounded-full">
+            Active: {selectedModel === AiModels.DEEPSEEK ? 'DeepSeek AI' : 'Gemini AI'}
+          </div>
+          
+          {onNewChat && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8" 
+                    onClick={onNewChat}
+                  >
+                    <PlusCircle className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Start a new chat</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       </div>
       <div className="flex space-x-3">
@@ -39,36 +62,26 @@ export default function ModelSelector({ selectedModel, onModelSelect }: ModelSel
           variant={selectedModel === AiModels.DEEPSEEK ? "default" : "outline"}
           className={`flex-1 justify-center h-14 ${
             selectedModel === AiModels.DEEPSEEK ? 
-              "bg-primary-50 dark:bg-primary-900/30 border-2 border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/50" : 
-              ""
+              "bg-primary-50 dark:bg-primary-900/30 border-2 border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400" : 
+              "text-slate-700 dark:text-slate-300"
           }`}
           onClick={() => onModelSelect(AiModels.DEEPSEEK)}
         >
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center mb-1">
-              <span className="text-base font-medium">DeepSeek AI</span>
-            </div>
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200">
-              NVIDIA API
-            </span>
+          <div className="flex items-center justify-center">
+            <span className="text-base font-medium">DeepSeek AI</span>
           </div>
         </Button>
         <Button
           variant={selectedModel === AiModels.GEMINI ? "default" : "outline"}
           className={`flex-1 justify-center h-14 ${
             selectedModel === AiModels.GEMINI ? 
-              "bg-primary-50 dark:bg-primary-900/30 border-2 border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/50" : 
-              ""
+              "bg-primary-50 dark:bg-primary-900/30 border-2 border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/50 text-primary-600 dark:text-primary-400" : 
+              "text-slate-700 dark:text-slate-300"
           }`}
           onClick={() => onModelSelect(AiModels.GEMINI)}
         >
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center mb-1">
-              <span className="text-base font-medium">Gemini AI</span>
-            </div>
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
-              Google API
-            </span>
+          <div className="flex items-center justify-center">
+            <span className="text-base font-medium">Gemini AI</span>
           </div>
         </Button>
       </div>

@@ -40,23 +40,23 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
     // If this is a user message, add instructions to improve response quality
     if (lastMessage.role === 'user') {
       if (model === AiModels.DEEPSEEK) {
-        // Add system instruction for DeepSeek to provide better responses
+        // Add system instruction for DeepSeek to provide better responses with thinking in a collapsible section
         enhancedMessages = [
           { 
             role: 'system', 
-            content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. When analyzing problems, explain your thinking first followed by a clear solution. Format your responses well with proper headings, lists, and paragraphs.'
+            content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. When analyzing problems, first write your detailed thought process surrounded by <think> tags like this: <think>Your detailed analysis here</think>. Then provide your clear direct answer immediately after. This helps users understand your reasoning.'
           },
           ...messages
         ];
       } else if (model === AiModels.GEMINI) {
-        // Add system instruction for Gemini to provide better responses  
+        // Add system instruction for Gemini to provide better responses without markdown
         enhancedMessages.unshift({
           role: 'user',
-          content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. Format your responses well with proper headings, lists, and paragraphs.'
+          content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. Format your responses well with proper headings and paragraphs. Do not use asterisks (*) for emphasis, instead use proper markdown for headings and formatting.'
         });
         enhancedMessages.unshift({
           role: 'assistant',
-          content: 'I will provide detailed and well-formatted responses with proper code blocks, headings, and structure.'
+          content: 'I will provide detailed and well-formatted responses with proper code blocks and headings without asterisks for emphasis.'
         });
       }
     }

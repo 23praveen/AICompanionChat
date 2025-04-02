@@ -56,7 +56,11 @@ export default function ChatContainer({ chatId, onNewChat }: ChatContainerProps)
     <div className="flex-1 overflow-hidden flex flex-col">
       {/* Model Selector */}
       <div className="border-b border-slate-200 dark:border-slate-700 p-4">
-        <ModelSelector selectedModel={selectedModel} onModelSelect={handleModelSelect} />
+        <ModelSelector 
+          selectedModel={selectedModel} 
+          onModelSelect={handleModelSelect} 
+          onNewChat={onNewChat}
+        />
       </div>
 
       {/* Chat Messages */}
