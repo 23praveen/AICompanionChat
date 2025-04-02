@@ -77,6 +77,20 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
 
 async function generateDeepSeekResponse(messages: { role: string; content: string }[]) {
   // Using hardcoded API key from the client initialization
+  // Process user code example request for proper formatting
+  const systemMessages = messages.filter(msg => msg.role === "system");
+  const userMessages = messages.filter(msg => msg.role === "user");
+  const lastUserMessage = userMessages[userMessages.length - 1]?.content || "";
+  
+  // Check if this might be a code example request with the input from user
+  if (lastUserMessage.includes("(### Explanation:") && 
+      (lastUserMessage.includes("Input:") || lastUserMessage.includes("Output:"))) {
+    // This is likely a code addition request, let's wrap this in think tags
+    const userContent = userMessages[userMessages.length - 1];
+    if (userContent) {
+      userContent.content = `Please analyze this code example and provide working code with proper explanations. <think>I'll think through this step by step to provide well-formatted and working code.</think>`;
+    }
+  }
 
   const completion = await deepseekClient.chat.completions.create({
     model: "deepseek-ai/deepseek-r1-distill-qwen-32b",

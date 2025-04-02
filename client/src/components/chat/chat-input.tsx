@@ -41,30 +41,39 @@ export default function ChatInput({ onSendMessage, isLoading, disabled = false }
   };
 
   return (
-    <form className="flex items-end space-x-2" onSubmit={handleSubmit}>
-      <div className="flex-1 relative">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          placeholder="Send a message..."
-          className="w-full resize-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-3 px-4 text-slate-900 dark:text-slate-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading || disabled}
-        />
-      </div>
-      <Button
-        type="submit"
-        className="flex-shrink-0 p-3 h-auto rounded-lg"
-        disabled={!message.trim() || isLoading || disabled}
-      >
-        {isLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          <Send className="h-5 w-5" />
-        )}
-      </Button>
-    </form>
+    <div className="space-y-1">
+      <form className="flex items-end space-x-2" onSubmit={handleSubmit}>
+        <div className="flex-1 relative">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            placeholder="Send a message..."
+            className="w-full resize-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-3 px-4 text-slate-900 dark:text-slate-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading || disabled}
+          />
+        </div>
+        <Button
+          type="submit"
+          className="flex-shrink-0 p-3 h-auto rounded-full"
+          disabled={!message.trim() || isLoading || disabled}
+        >
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
+        </Button>
+      </form>
+      {isLoading && (
+        <div className="text-center">
+          <p className="text-xs text-primary-500 dark:text-primary-400 animate-pulse">
+            Generating response...
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

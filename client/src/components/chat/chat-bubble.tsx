@@ -13,9 +13,9 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
 
   if (isUser) {
     return (
-      <div className="flex items-start justify-end">
-        <div className="max-w-lg chat-bubble-user bg-primary-500 text-white px-4 py-3 rounded-tl-xl rounded-tr-xl rounded-bl-xl shadow-md">
-          <p className="text-sm text-white whitespace-pre-wrap font-normal">{message.content}</p>
+      <div className="flex items-start justify-end max-w-full">
+        <div className="max-w-[85%] md:max-w-lg chat-bubble-user bg-primary-600 px-4 py-3 rounded-tl-xl rounded-tr-xl rounded-bl-xl shadow-md">
+          <p className="text-sm text-gray-50 whitespace-pre-wrap font-medium" style={{ color: '#ffffff' }}>{message.content}</p>
         </div>
         <div className="ml-2 flex-shrink-0">
           <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
@@ -27,14 +27,14 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
   }
 
   return (
-    <div className="flex items-start">
+    <div className="flex items-start max-w-full">
       <div className="flex-shrink-0 mr-2">
         <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
           <Cpu className="h-5 w-5 text-primary-600 dark:text-primary-400" />
         </div>
       </div>
-      <div className="max-w-3xl chat-bubble-ai bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-tr-xl rounded-tl-xl rounded-br-xl shadow-md">
-        <div className="flex items-center justify-between mb-2 border-b pb-2 border-slate-200 dark:border-slate-700">
+      <div className="max-w-[85%] md:max-w-3xl chat-bubble-ai bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-tr-xl rounded-tl-xl rounded-br-xl shadow-md">
+        <div className="flex flex-wrap items-center justify-between mb-2 border-b pb-2 border-slate-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className={`w-2 h-2 rounded-full mr-2 ${message.model === AiModels.DEEPSEEK ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
             <p className="text-sm font-medium text-primary-600 dark:text-primary-400">
@@ -46,7 +46,7 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
               onClick={() => {
                 navigator.clipboard.writeText(message.content);
               }}
-              className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 mt-1 sm:mt-0"
             >
               Copy response
             </button>
@@ -55,9 +55,12 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
         
         {isLoading ? (
           <div className="flex items-center p-4">
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce mx-1" style={{ animationDelay: '150ms' }}></div>
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="flex space-x-1 items-center">
+              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-75"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-150"></div>
+              <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse delay-300"></div>
+            </div>
             <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Generating response...</span>
           </div>
         ) : (
