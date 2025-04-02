@@ -44,7 +44,7 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
         enhancedMessages = [
           { 
             role: 'system', 
-            content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. When analyzing problems, first write your detailed thought process surrounded by <think> tags like this: <think>Your detailed analysis here</think>. Then provide your clear direct answer immediately after. This helps users understand your reasoning.'
+            content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. When analyzing problems, first write your detailed thought process surrounded by <think> tags like this: <think>Your detailed analysis here</think>. Then provide your clear direct answer immediately after. NEVER use double asterisks (**) for formatting in your responses. Instead use proper section headings and clean text formatting. This helps users understand your reasoning.'
           },
           ...messages
         ];
@@ -52,11 +52,11 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
         // Add system instruction for Gemini to provide better responses without markdown
         enhancedMessages.unshift({
           role: 'user',
-          content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. Format your responses well with proper headings and paragraphs. Do not use asterisks (*) for emphasis, instead use proper markdown for headings and formatting.'
+          content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. Format your responses well with proper headings and paragraphs. NEVER use asterisks (*) for emphasis or formatting. Instead use proper HTML heading tags or plain text formatting.'
         });
         enhancedMessages.unshift({
           role: 'assistant',
-          content: 'I will provide detailed and well-formatted responses with proper code blocks and headings without asterisks for emphasis.'
+          content: 'I will provide detailed and well-formatted responses with proper code blocks and headings without using any asterisks (*) for emphasis or formatting.'
         });
       }
     }
