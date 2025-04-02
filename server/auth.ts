@@ -29,8 +29,10 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Use a default session secret for development
   if (!process.env.SESSION_SECRET) {
-    throw new Error("SESSION_SECRET environment variable is required");
+    process.env.SESSION_SECRET = "replit-ai-chat-dev-secret-key";
+    console.warn("Warning: Using default SESSION_SECRET. Set a proper one in production.");
   }
   
   const sessionSettings: session.SessionOptions = {
@@ -100,11 +102,11 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: Error | null, user: Express.User | false, info: { message: string }) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid credentials" });
       
-      req.login(user, (err) => {
+      req.login(user, (err: Error | null) => {
         if (err) return next(err);
         
         // Remove password from response
@@ -115,7 +117,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/logout", (req, res, next) => {
-    req.logout((err) => {
+    req.logout((err: Error | null) => {
       if (err) return next(err);
       res.sendStatus(200);
     });

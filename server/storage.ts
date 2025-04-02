@@ -1,5 +1,5 @@
 import { users, type User, type InsertUser, chats, type Chat, type InsertChat, messages, type Message, type InsertMessage } from "@shared/schema";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -24,17 +24,15 @@ export interface IStorage {
   createMessage(message: InsertMessage): Promise<Message>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   constructor() {
     this.sessionStore = new PostgresSessionStore({
-      conObject: {
-        connectionString: process.env.DATABASE_URL,
-      },
+      pool: pool,
       createTableIfMissing: true
     });
   }

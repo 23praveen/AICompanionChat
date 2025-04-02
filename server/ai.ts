@@ -9,11 +9,30 @@ const deepseekClient = new OpenAI({
 });
 
 // Initialize the Google Gemini AI client
-const geminiClient = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
-const geminiModel = geminiClient.getGenerativeModel({ model: "gemini-1.5-pro" });
+let geminiClient: GoogleGenerativeAI;
+let geminiModel: any;
+
+function initializeGeminiClient() {
+  if (!geminiClient && process.env.GOOGLE_API_KEY) {
+    geminiClient = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    geminiModel = geminiClient.getGenerativeModel({ model: "gemini-1.5-pro" });
+  }
+}
 
 export async function generateChatResponse(model: AiModel, messages: { role: string; content: string }[]) {
   try {
+    // Check if we have the required API keys
+    const hasNvidiaKey = !!process.env.NVIDIA_API_KEY;
+    const hasGoogleKey = !!process.env.GOOGLE_API_KEY;
+
+    // Validate model availability based on API keys
+    if (model === AiModels.DEEPSEEK && !hasNvidiaKey) {
+      throw new Error("NVIDIA_API_KEY is not set for DeepSeek model");
+    } else if (model === AiModels.GEMINI && !hasGoogleKey) {
+      throw new Error("GOOGLE_API_KEY is not set for Gemini model");
+    }
+
+    // Generate response based on model
     if (model === AiModels.DEEPSEEK) {
       return await generateDeepSeekResponse(messages);
     } else if (model === AiModels.GEMINI) {
@@ -28,6 +47,8 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
 }
 
 async function generateDeepSeekResponse(messages: { role: string; content: string }[]) {
+  // This check is redundant since we already check in generateChatResponse,
+  // but keeping it for extra safety
   if (!process.env.NVIDIA_API_KEY) {
     throw new Error("NVIDIA_API_KEY is not set");
   }
@@ -47,8 +68,17 @@ async function generateDeepSeekResponse(messages: { role: string; content: strin
 }
 
 async function generateGeminiResponse(messages: { role: string; content: string }[]) {
+  // This check is redundant since we already check in generateChatResponse,
+  // but keeping it for extra safety
   if (!process.env.GOOGLE_API_KEY) {
     throw new Error("GOOGLE_API_KEY is not set");
+  }
+
+  // Initialize Gemini client if not already done
+  initializeGeminiClient();
+
+  if (!geminiModel) {
+    throw new Error("Failed to initialize Gemini model");
   }
 
   // Convert messages to Gemini format
