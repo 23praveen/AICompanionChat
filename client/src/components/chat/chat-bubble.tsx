@@ -5,17 +5,18 @@ import { Cpu, User } from "lucide-react";
 interface ChatBubbleProps {
   message: Message;
   isLastMessage?: boolean;
+  onRegenerateResponse?: () => void;
 }
 
-export default function ChatBubble({ message, isLastMessage = false }: ChatBubbleProps) {
+export default function ChatBubble({ message, isLastMessage = false, onRegenerateResponse }: ChatBubbleProps) {
   const isUser = message.role === 'user';
   const isLoading = isLastMessage && message.role === 'assistant' && !message.content;
 
   if (isUser) {
     return (
       <div className="flex items-start justify-end max-w-full">
-        <div className="max-w-[85%] md:max-w-[75%] chat-bubble-user bg-primary-600 px-4 py-3 rounded-2xl shadow-md">
-          <p className="text-sm whitespace-pre-wrap text-white">{message.content}</p>
+        <div className="max-w-[85%] md:max-w-[75%] chat-bubble-user bg-blue-500 px-4 py-3 rounded-2xl shadow-sm">
+          <p className="text-sm whitespace-pre-wrap font-normal text-white">{message.content}</p>
         </div>
         <div className="ml-2 flex-shrink-0">
           <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
@@ -27,47 +28,100 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
   }
 
   return (
-    <div className="flex items-start max-w-full">
-      <div className="flex-shrink-0 mr-2">
-        <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-          <Cpu className="h-5 w-5 text-green-600 dark:text-green-400" />
-        </div>
-      </div>
-      <div className="max-w-[85%] md:max-w-[75%] chat-bubble-ai bg-white dark:bg-gray-800 px-4 py-3 rounded-2xl shadow-sm">
-        <div className="flex flex-wrap items-center justify-between mb-2 border-b pb-2 border-slate-200 dark:border-slate-700">
-          <div className="flex items-center">
-            <div className={`w-2 h-2 rounded-full mr-2 ${message.model === AiModels.DEEPSEEK ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              {message.model === AiModels.DEEPSEEK ? 'DeepSeek AI' : 'Gemini AI'}
-            </p>
+    <div className="flex flex-col w-full">
+      <div className="flex items-start max-w-full">
+        <div className="flex-shrink-0 mr-2">
+          <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+            <Cpu className="h-5 w-5 text-green-600 dark:text-green-400" />
           </div>
-          {!isLoading && (
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(message.content);
-              }}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1 sm:mt-0"
-            >
-              Copy response
-            </button>
+        </div>
+        <div className="max-w-[85%] md:max-w-[75%] chat-bubble-ai bg-white dark:bg-gray-800 px-4 py-3 rounded-2xl shadow-sm">
+          <div className="flex flex-wrap items-center justify-between mb-2 border-b pb-2 border-slate-200 dark:border-slate-700">
+            <div className="flex items-center">
+              <div className={`w-2 h-2 rounded-full mr-2 ${message.model === AiModels.DEEPSEEK ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                {message.model === AiModels.DEEPSEEK ? 'DeepSeek AI' : 'Gemini AI'}
+              </p>
+            </div>
+            {!isLoading && (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(message.content);
+                    const button = document.activeElement;
+                    if (button) {
+                      const originalText = button.textContent;
+                      button.textContent = 'Copied!';
+                      setTimeout(() => {
+                        button.textContent = originalText;
+                      }, 1500);
+                    }
+                  }}
+                  className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1 sm:mt-0 flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  Copy
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {isLoading ? (
+            <div className="flex flex-col gap-2 p-4">
+              <div className="flex space-x-2 items-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin text-gray-500 dark:text-gray-400">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25"></circle>
+                  <path d="M12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" 
+                        stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
+                </svg>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Thinking...</span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 ml-7">
+                {message.model === AiModels.DEEPSEEK ? 'DeepSeek' : 'Gemini'} is working on your response. This may take a moment.
+              </p>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+              {formatMessageContent(message.content)}
+            </div>
           )}
         </div>
-        
-        {isLoading ? (
-          <div className="flex items-center p-4">
-            <div className="flex space-x-1 items-center">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-75"></div>
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-150"></div>
-            </div>
-            <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">Thinking...</span>
-          </div>
-        ) : (
-          <div className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-            {formatMessageContent(message.content)}
-          </div>
-        )}
       </div>
+      
+      {/* Regenerate Response button - Only shown for the last AI message if it's not loading */}
+      {isLastMessage && !isLoading && message.role === 'assistant' && (
+        <div className="flex justify-center mt-2 mb-4">
+          <button 
+            className="flex items-center gap-2 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            onClick={() => {
+              // Visual feedback
+              const button = document.activeElement;
+              if (button) {
+                button.classList.add('bg-gray-100', 'dark:bg-gray-700');
+                setTimeout(() => {
+                  button.classList.remove('bg-gray-100', 'dark:bg-gray-700');
+                }, 200);
+              }
+              
+              // Call the regenerate function if provided
+              if (onRegenerateResponse) {
+                onRegenerateResponse();
+              }
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+              <path d="M16 21h5v-5"></path>
+            </svg>
+            Regenerate response
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -104,9 +158,22 @@ function formatMessageContent(content: string) {
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(code);
+                  // Show a tooltip or some visual feedback
+                  const tooltip = document.createElement('div');
+                  tooltip.textContent = 'Copied!';
+                  tooltip.className = 'absolute right-0 -top-8 bg-gray-700 text-white text-xs px-2 py-1 rounded';
+                  const codeBlock = document.activeElement?.closest('.relative');
+                  if (codeBlock) {
+                    codeBlock.appendChild(tooltip);
+                    setTimeout(() => tooltip.remove(), 1500);
+                  }
                 }} 
-                className="text-xs text-gray-300 hover:text-white"
+                className="text-xs text-gray-300 hover:text-white flex items-center gap-1"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
                 Copy code
               </button>
             </div>

@@ -7,16 +7,17 @@ import { Zap } from "lucide-react";
 interface ChatMessagesProps {
   chatId: number | null;
   isLoadingResponse: boolean;
+  onRegenerateResponse?: () => void;
 }
 
-export default function ChatMessages({ chatId, isLoadingResponse }: ChatMessagesProps) {
+export default function ChatMessages({ chatId, isLoadingResponse, onRegenerateResponse }: ChatMessagesProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { 
-    data: messages,
+    data: messages = [],
     isLoading, 
   } = useQuery<Message[]>({
-    queryKey: chatId ? [`/api/chats/${chatId}/messages`] : null,
+    queryKey: chatId ? [`/api/chats/${chatId}/messages`] : ['empty'],
     enabled: !!chatId,
   });
 
@@ -84,20 +85,21 @@ export default function ChatMessages({ chatId, isLoadingResponse }: ChatMessages
         <ChatBubble 
           key={message.id} 
           message={message} 
-          isLastMessage={index === messages.length - 1 && isLoadingResponse}
+          isLastMessage={index === messages.length - 1 && !isLoadingResponse}
+          onRegenerateResponse={index === messages.length - 1 && message.role === 'assistant' ? onRegenerateResponse : undefined}
         />
       ))}
       
       {/* Loading indicator for new response */}
-      {isLoadingResponse && messages && messages[messages.length - 1]?.role === 'user' && (
+      {isLoadingResponse && messages && messages.length > 0 && messages[messages.length - 1]?.role === 'user' && (
         <ChatBubble 
           message={{
             id: -1,
-            chatId: chatId,
+            chatId: chatId as number,
             content: '',
             role: 'assistant',
             model: messages[messages.length - 1]?.model || 'deepseek',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
           }}
           isLastMessage={true}
         />

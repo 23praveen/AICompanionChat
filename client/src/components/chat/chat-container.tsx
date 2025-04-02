@@ -52,6 +52,25 @@ export default function ChatContainer({ chatId, onNewChat }: ChatContainerProps)
   const handleModelSelect = (model: AiModel) => {
     setSelectedModel(model);
   };
+  
+  // Regenerate the last response by sending the last user message again
+  const handleRegenerateResponse = () => {
+    if (!chatId) return;
+    
+    // Get the last user message from the cache
+    const messagesCache = queryClient.getQueryData<any>([`/api/chats/${chatId}/messages`]);
+    if (!messagesCache || !Array.isArray(messagesCache) || messagesCache.length < 2) return;
+    
+    // Find the last user message before the last AI response
+    const userMessages = messagesCache.filter(m => m.role === 'user');
+    if (userMessages.length === 0) return;
+    
+    const lastUserMessage = userMessages[userMessages.length - 1];
+    if (!lastUserMessage?.content) return;
+    
+    // Send the message again with the currently selected model
+    sendMessageMutation.mutate(lastUserMessage.content);
+  };
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
@@ -71,6 +90,7 @@ export default function ChatContainer({ chatId, onNewChat }: ChatContainerProps)
       <ChatMessages 
         chatId={chatId} 
         isLoadingResponse={sendMessageMutation.isPending}
+        onRegenerateResponse={handleRegenerateResponse}
       />
 
       {/* Input Area */}
