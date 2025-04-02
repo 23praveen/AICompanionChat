@@ -33,11 +33,39 @@ export async function generateChatResponse(model: AiModel, messages: { role: str
       initializeGeminiClient();
     }
 
+    // Format the prompt to get better responses
+    const lastMessage = messages[messages.length - 1];
+    let enhancedMessages = [...messages];
+    
+    // If this is a user message, add instructions to improve response quality
+    if (lastMessage.role === 'user') {
+      if (model === AiModels.DEEPSEEK) {
+        // Add system instruction for DeepSeek to provide better responses
+        enhancedMessages = [
+          { 
+            role: 'system', 
+            content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. When analyzing problems, explain your thinking first followed by a clear solution. Format your responses well with proper headings, lists, and paragraphs.'
+          },
+          ...messages
+        ];
+      } else if (model === AiModels.GEMINI) {
+        // Add system instruction for Gemini to provide better responses  
+        enhancedMessages.unshift({
+          role: 'user',
+          content: 'You are an AI assistant that provides detailed, accurate, and helpful answers. For code examples, always use markdown code blocks with proper syntax highlighting. Format your responses well with proper headings, lists, and paragraphs.'
+        });
+        enhancedMessages.unshift({
+          role: 'assistant',
+          content: 'I will provide detailed and well-formatted responses with proper code blocks, headings, and structure.'
+        });
+      }
+    }
+
     // Generate response based on model
     if (model === AiModels.DEEPSEEK) {
-      return await generateDeepSeekResponse(messages);
+      return await generateDeepSeekResponse(enhancedMessages);
     } else if (model === AiModels.GEMINI) {
-      return await generateGeminiResponse(messages);
+      return await generateGeminiResponse(enhancedMessages);
     } else {
       throw new Error(`Unsupported model: ${model}`);
     }
