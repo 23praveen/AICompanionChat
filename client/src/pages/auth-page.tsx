@@ -17,6 +17,7 @@ const loginSchema = z.object({
 });
 
 const registerSchema = loginSchema.extend({
+  email: z.string().email("Invalid email address"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -42,6 +43,7 @@ export default function AuthPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
+      email: "",
       password: "",
       confirmPassword: "",
     },
@@ -134,6 +136,18 @@ export default function AuthPage() {
                     />
                     {registerForm.formState.errors.username && (
                       <p className="text-sm text-red-500">{registerForm.formState.errors.username.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      {...registerForm.register("email")}
+                    />
+                    {registerForm.formState.errors.email && (
+                      <p className="text-sm text-red-500">{registerForm.formState.errors.email.message}</p>
                     )}
                   </div>
                   <div className="space-y-2">

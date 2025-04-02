@@ -150,3 +150,21 @@ function formatMessagesForGemini(messages: { role: string; content: string }[]) 
   
   return formattedMessages;
 }
+
+// This function is used in routes.sqlite.ts to generate AI responses
+// It adapts the existing generateChatResponse function to match the expected interface
+export async function generateAiResponse(messages: { chatId: number; content: string; role: string; createdAt: Date }[], model: AiModel) {
+  try {
+    // Convert the message format to what generateChatResponse expects
+    const formattedMessages = messages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }));
+    
+    // Call the existing function with the formatted messages
+    return await generateChatResponse(model, formattedMessages);
+  } catch (error) {
+    console.error(`Error in generateAiResponse:`, error);
+    throw error;
+  }
+}

@@ -56,6 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerMutation = useMutation({
     mutationFn: async (credentials: InsertUser) => {
       const res = await apiRequest("POST", "/api/register", credentials);
+      // apiRequest already checks if response is OK and throws an error if not
+      // We just need to parse and return the JSON data
       return await res.json();
     },
     onSuccess: (user: User) => {
