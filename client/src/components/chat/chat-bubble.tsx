@@ -15,7 +15,7 @@ export default function ChatBubble({ message, isLastMessage = false }: ChatBubbl
     return (
       <div className="flex items-start justify-end max-w-full">
         <div className="max-w-[85%] md:max-w-lg chat-bubble-user bg-primary-600 px-4 py-3 rounded-tl-xl rounded-tr-xl rounded-bl-xl shadow-md">
-          <p className="text-sm text-gray-50 whitespace-pre-wrap font-medium" style={{ color: '#ffffff' }}>{message.content}</p>
+          <p className="text-sm whitespace-pre-wrap font-medium text-white">{message.content}</p>
         </div>
         <div className="ml-2 flex-shrink-0">
           <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">

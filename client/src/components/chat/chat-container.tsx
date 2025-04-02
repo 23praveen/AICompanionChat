@@ -6,6 +6,7 @@ import ChatInput from "./chat-input";
 import ModelSelector from "./model-selector";
 import { AiModels, type AiModel } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface ChatContainerProps {
   chatId: number | null;
@@ -54,13 +55,16 @@ export default function ChatContainer({ chatId, onNewChat }: ChatContainerProps)
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
-      {/* Model Selector */}
-      <div className="border-b border-slate-200 dark:border-slate-700 p-4">
-        <ModelSelector 
-          selectedModel={selectedModel} 
-          onModelSelect={handleModelSelect} 
-          onNewChat={onNewChat}
-        />
+      {/* New Chat Button - Desktop only */}
+      <div className="hidden md:flex justify-end border-b border-slate-200 dark:border-slate-700 p-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="rounded-full px-3 flex items-center"
+          onClick={onNewChat}
+        >
+          <span className="mr-1">+</span> New chat
+        </Button>
       </div>
 
       {/* Chat Messages */}
@@ -75,6 +79,8 @@ export default function ChatContainer({ chatId, onNewChat }: ChatContainerProps)
           onSendMessage={handleSendMessage} 
           isLoading={sendMessageMutation.isPending}
           disabled={!chatId}
+          selectedModel={selectedModel}
+          onModelSelect={handleModelSelect}
         />
         
         <div className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400">
