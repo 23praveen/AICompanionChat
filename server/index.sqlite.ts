@@ -71,7 +71,9 @@ app.use((req, res, next) => {
 
   // Start the server
   const PORT = process.env.PORT || 3000; // Changed from 5000 to 3000 to avoid ENOTSUP error
-  server.listen(Number(PORT), "127.0.0.1", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  server.listen(Number(PORT), "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`For local access: http://localhost:${PORT}`);
+    console.log(`For external access: http://<your-ip-address>:${PORT}`);
   });
 })();
